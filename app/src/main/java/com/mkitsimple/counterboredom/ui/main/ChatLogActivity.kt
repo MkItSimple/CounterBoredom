@@ -40,13 +40,14 @@ class ChatLogActivity : AppCompatActivity() {
         val USER_KEY = "USER_KEY"
     }
 
+    val adapter = GroupAdapter<ViewHolder>()
+
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
     var toUser: User? = null
     var fromId: String? = null
     var toId: String? = null
     var token: String? = null
-
-    val adapter = GroupAdapter<ViewHolder>()
+    var currentUser: User? = null
 
     private lateinit var chatLogViewModel: ChatLogViewModel
 
@@ -66,6 +67,7 @@ class ChatLogActivity : AppCompatActivity() {
 
         fromId = FirebaseAuth.getInstance().uid
         toId = toUser?.uid
+        val uid = mAuth.uid
 
 //        backArrow.setOnClickListener {
 //
@@ -73,6 +75,7 @@ class ChatLogActivity : AppCompatActivity() {
 
         //setDummyData()
         listenForMessages()
+        getCurrentUser(uid!!)
 
         chatLogSendbuutton.setOnClickListener {
             //Log.d(TAG, "Attempt to send message....")
@@ -85,6 +88,14 @@ class ChatLogActivity : AppCompatActivity() {
             intent.type = "image/*"
             startActivityForResult(intent, 0)
         }
+    }
+
+    private fun getCurrentUser(uid: String) {
+        chatLogViewModel.fetchFilteredUsers(uid)
+
+        chatLogViewModel.user.observe(this, Observer {
+            currentUser = it
+        })
     }
 
     var selectedPhotoUri: Uri? = null // we put this outide the function . . so that we can use it later on
@@ -137,6 +148,7 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun performSendMessage(token: String) {
         val text = chatLogEditText.text.toString()
+        //val fromUsername = currentUser!!.username
 
         chatLogViewModel.performSendMessage(toId, fromId, text)
 
@@ -157,7 +169,7 @@ class ChatLogActivity : AppCompatActivity() {
                 Api::class.java
             )
 
-        val call = api.sendNotification(token, "Choreyn Anania", text)
+        val call = api.sendNotification(token, currentUser!!.username, text)
 
         call?.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(
