@@ -9,6 +9,7 @@ import android.provider.MediaStore
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.storage.FirebaseStorage
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.data.models.User
@@ -21,11 +22,27 @@ class RegisterActivity : AppCompatActivity() {
 
     companion object {
         val TAG = "RegisterActivity"
+        val CHANNEL_ID = "MainActivity"
+        val CHANNEL_NAME = "Simplified Coding"
+        val CHANNEL_DESC = "Simplified Coding Notifications"
     }
+
+    private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private var token: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        // generate registration token for this device
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    token = task.result!!.token
+                    //saveToken(token)
+                    Log.d(TAG, token!!)
+                }
+            }
 
         buttonRegister.setOnClickListener {
             performRegister()
@@ -39,7 +56,7 @@ class RegisterActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        imageViewSelectPhoto.setOnClickListener {
+        buttonSelectPhoto.setOnClickListener {
             Log.d(TAG, "Try to show photo selector")
 
             val intent = Intent(Intent.ACTION_PICK)
@@ -49,18 +66,17 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun performRegister(){
-        val username = editTextUsername.text.toString()
         val email = editTextEmail.text.toString()
         val password = editTextPassword.text.toString()
 
-        //Log.d("MainActivity", "Email is: " + email)
+        Log.d(TAG, "Email is: " + email)
 
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+        mAuth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (!it.isSuccessful) return@addOnCompleteListener
                 Log.d(TAG, "Successfully created user with uid: ${it.result?.user?.uid}")
                 uploadImageToFirebaseStorage()
-                saveUserToFirebaseDatabase(selectedPhotoUri.toString()!!)
+                saveUserToFirebaseDatabase(selectedPhotoUri.toString(), token)
             }
             .addOnFailureListener{
                 Log.d(TAG, "Failed to create user: ${it.message}")
@@ -80,7 +96,7 @@ class RegisterActivity : AppCompatActivity() {
             selectedPhotoUri = data.data
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedPhotoUri)
             imageViewSelectPhoto.setImageBitmap(bitmap)
-            selectphoto_button_register.alpha = 0f
+            buttonSelectPhoto.alpha = 0f
         }
     }
 
@@ -96,7 +112,7 @@ class RegisterActivity : AppCompatActivity() {
 
                 ref.downloadUrl.addOnSuccessListener {
                     Log.d(TAG, "File Location: $it")
-                    //saveUserToFirebaseDatabase(it.toString())
+                    saveUserToFirebaseDatabase(it.toString(), token)
                 }
             }
             .addOnFailureListener {
@@ -104,11 +120,11 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-    private fun saveUserToFirebaseDatabase(profileImageUrl: String) {
+    private fun saveUserToFirebaseDatabase(profileImageUrl: String, token: String?) {
         val uid = FirebaseAuth.getInstance().uid ?: ""
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
-        val user = User(uid, editTextUsername.text.toString(), profileImageUrl)
+        val user = User(uid, editTextUsername.text.toString(), profileImageUrl, token!!)
 
         ref.setValue(user)
             .addOnSuccessListener {

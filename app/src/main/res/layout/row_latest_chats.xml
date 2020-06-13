@@ -7,27 +7,27 @@
     android:background="@color/transparentBackground">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imageViewLatestMessage"
+        android:id="@+id/latestMessageCircleImageView"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="@color/transparentBackground"
-        android:src="@drawable/pi"
+        app:srcCompat="@android:drawable/btn_star_big_on"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewUsername"
+        android:id="@+id/latestMessageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="5dp"
         android:background="@color/transparentBackground"
-        android:fontFamily="@font/montserrat_medium"
+        android:fontFamily="@font/montserrat_bold"
         android:text="Choreyn Anania"
-        android:textColor="@color/colorTextBlack"
+        android:textColor="@color/colorTextBlackDark"
         android:textSize="16dp"
-        app:layout_constraintStart_toEndOf="@+id/imageViewLatestMessage"
+        app:layout_constraintStart_toEndOf="@+id/latestMessageCircleImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -37,10 +37,10 @@
         android:layout_marginLeft="10dp"
         android:fontFamily="@font/montserrat_medium"
         android:text="Some latest chats here"
-        android:textColor="@color/colorTextBlack"
+        android:textColor="@color/colorTextBlackLight"
         android:textSize="14dp"
         android:background="@color/transparentBackground"
-        app:layout_constraintStart_toEndOf="@+id/imageViewLatestMessage"
-        app:layout_constraintTop_toBottomOf="@+id/textViewUsername"/>
+        app:layout_constraintStart_toEndOf="@+id/latestMessageCircleImageView"
+        app:layout_constraintTop_toBottomOf="@+id/latestMessageTextView"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

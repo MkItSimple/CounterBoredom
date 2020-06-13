@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/customToolbarChatLog"
     android:background="@drawable/background_primary_gradient">
-
+<!--    android:id="@+id/customToolbarChatLog"
+android:id="@+id/toolbarCustom"-->
     <Toolbar
-        android:id="@+id/toolbarCustom"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +22,7 @@
             android:src="@drawable/ic_arrow_back_white_24dp" />
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profileImage"
+            android:id="@+id/customToolbarChatLogCircleImageView"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginRight="10dp"
@@ -31,7 +30,7 @@
             android:src="@drawable/pi" />
 
         <TextView
-            android:id="@+id/toolbarTitle"
+            android:id="@+id/customToolbarChatLogTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@color/transparentBackground"

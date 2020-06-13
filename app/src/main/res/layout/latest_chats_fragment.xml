@@ -7,7 +7,7 @@
     tools:context=".ui.main.LatestChatsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_latest_chats"
+        android:id="@+id/recyclerviewLatestChats"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

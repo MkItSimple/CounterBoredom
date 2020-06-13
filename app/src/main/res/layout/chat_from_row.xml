@@ -4,14 +4,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="20dp"
+    android:layout_marginBottom="10dp"
     android:background="@color/transparentBackground">
 
     <TextView
         android:id="@+id/textViewFromRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="5dp"
         android:background="@drawable/background_chat_from"
         android:fontFamily="@font/montserrat_regular"
         android:maxWidth="240dp"
@@ -19,7 +19,7 @@
         android:paddingTop="10dp"
         android:paddingRight="20dp"
         android:paddingBottom="10dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="3dp"
         android:text="This is my message that will wrap into multipole lines and keep on going"
         android:textColor="@color/colorTextWhite"
         android:textSize="12sp"

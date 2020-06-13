@@ -10,7 +10,7 @@
     android:paddingRight="20dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleImageView"
+        android:id="@+id/friendsListCircleImageView"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:src="@drawable/pi"
@@ -19,16 +19,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/editTextUsername"
+        android:id="@+id/friendsListTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Choreyn Anania"
         android:textSize="16dp"
-        android:textColor="@color/colorTextBlack"
+        android:textColor="@color/colorTextBlackDark"
         android:fontFamily="@font/montserrat_medium"
         android:layout_marginTop="8dp"
         android:layout_marginLeft="10dp"
-        app:layout_constraintStart_toEndOf="@+id/circleImageView"
+        app:layout_constraintStart_toEndOf="@+id/friendsListCircleImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
