@@ -1,24 +1,21 @@
 package com.mkitsimple.counterboredom.ui.main
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.annotation.Nullable
-import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.viewpager.widget.ViewPager
-import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.auth.RegisterActivity
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.custom_toolbar_latestchats.*
 
@@ -45,14 +42,14 @@ class MainActivity : AppCompatActivity() {
 
         tab_layout.setupWithViewPager(view_pager)
 
-        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 0)
+        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 1)
         viewPagerAdapter.addFragment(latestChatsFragment, "Latest Chats")
         viewPagerAdapter.addFragment(friendsFragment, "Friends List")
         viewPagerAdapter.addFragment(profileFragment, "Profile")
         view_pager.setAdapter(viewPagerAdapter)
+        //view_pager.setCurrentItem(currentFragment!!, true)
 
         verifyUserIsLoggedIn()
-
         fetchCurrentUser()
     }
 
@@ -110,6 +107,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.currentUser.observe(this, Observer { cUser ->
             currentUser = cUser
             //Log.d(TAG, "CurrentUser Name: "+ currentUser?.username)
+
+            Picasso.get().load(currentUser?.profileImageUrl).into(circleImageViewMain)
         })
     }
 }

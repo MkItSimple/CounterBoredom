@@ -15,7 +15,7 @@ class ChatFromItem(val text: String, val user: User): Item<ViewHolder>() {
 
         val uri = user.profileImageUrl
         val targetImageView = viewHolder.itemView.imageViewFromRow
-        if (uri != null){
+        if (uri !== null){
             Picasso.get().load(uri).into(targetImageView)
         }
     }

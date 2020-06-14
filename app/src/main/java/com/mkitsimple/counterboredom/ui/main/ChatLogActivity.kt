@@ -38,6 +38,7 @@ class ChatLogActivity : AppCompatActivity() {
     companion object {
         val TAG = "ChatLog"
         val USER_KEY = "USER_KEY"
+        //var currentUser: User? = null
     }
 
     val adapter = GroupAdapter<ViewHolder>()
@@ -47,7 +48,7 @@ class ChatLogActivity : AppCompatActivity() {
     var fromId: String? = null
     var toId: String? = null
     var token: String? = null
-    var currentUser: User? = null
+
 
     private lateinit var chatLogViewModel: ChatLogViewModel
 
@@ -67,15 +68,16 @@ class ChatLogActivity : AppCompatActivity() {
 
         fromId = FirebaseAuth.getInstance().uid
         toId = toUser?.uid
-        val uid = mAuth.uid
+        //val uid = mAuth.uid
 
-//        backArrow.setOnClickListener {
-//
-//        }
+        backArrow.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
 
         //setDummyData()
         listenForMessages()
-        getCurrentUser(uid!!)
+        //getCurrentUser(uid!!)
 
         chatLogSendbuutton.setOnClickListener {
             //Log.d(TAG, "Attempt to send message....")
@@ -90,13 +92,12 @@ class ChatLogActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCurrentUser(uid: String) {
-        chatLogViewModel.fetchFilteredUsers(uid)
-
-        chatLogViewModel.user.observe(this, Observer {
-            currentUser = it
-        })
-    }
+//    private fun getCurrentUser(uid: String) {
+//        chatLogViewModel.fetchFilteredUsers(uid)
+//        chatLogViewModel.user.observe(this, Observer {
+//            currentUser = it
+//        })
+//    }
 
     var selectedPhotoUri: Uri? = null // we put this outide the function . . so that we can use it later on
 
@@ -169,7 +170,7 @@ class ChatLogActivity : AppCompatActivity() {
                 Api::class.java
             )
 
-        val call = api.sendNotification(token, currentUser!!.username, text)
+        val call = api.sendNotification(token, MainActivity.currentUser!!.username, text)
 
         call?.enqueue(object : Callback<ResponseBody?> {
             override fun onResponse(
@@ -195,17 +196,12 @@ class ChatLogActivity : AppCompatActivity() {
     private fun listenForMessages() {
         chatLogViewModel.listenForMessages(toUser?.uid)
         chatLogViewModel.chatMessage.observe(this, Observer { chatMessage ->
-//            if (chatMessage.fromId == fromId) { // current loggedin user FirebaseAuth.getInstance().uid
-//                adapter.add(ChatFromItem(chatMessage.text, MainActivity.currentUser!!))
-//            } else {
-//                adapter.add(ChatToItem(chatMessage.text, toUser!!))
-//            }
 
             if (chatMessage.fromId == mAuth.uid) {
                 //adapter.add(ChatToItem(chatMessage.text, currentUser))
-                adapter.add(ChatFromItem(chatMessage.text, toUser!!))
+                adapter.add(ChatFromItem(chatMessage.text, MainActivity.currentUser!!))
             } else {
-                adapter.add(ChatToItem(chatMessage.text, MainActivity.currentUser!!))
+                adapter.add(ChatToItem(chatMessage.text, toUser!!))
             }
 
             recylerViewChatLog.scrollToPosition(adapter.itemCount - 1)

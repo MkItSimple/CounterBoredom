@@ -17,10 +17,12 @@
         android:background="@color/transparentBackground">
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circleImageViewMain"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/pi"
-            android:background="@color/transparentBackground"/>
+            android:layout_marginRight="10dp"
+            android:background="@color/transparentBackground"
+            android:src="@drawable/pi"/>
     </androidx.appcompat.widget.Toolbar>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

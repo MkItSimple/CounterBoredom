@@ -7,7 +7,6 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.data.models.ChatMessage
-import com.mkitsimple.counterboredom.data.models.MessageType
 import com.mkitsimple.counterboredom.data.models.User
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.Item
@@ -18,11 +17,7 @@ class LatestChatItems (val chatMessage: ChatMessage): Item<ViewHolder>() {
     var chatPartnerUser: User? = null
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
-        if (chatMessage.type == MessageType.TEXT){
-            viewHolder.itemView.textViewLatestMessage.text = chatMessage.text
-        } else {
-            viewHolder.itemView.textViewLatestMessage.text = "You sent a photo"
-        }
+        viewHolder.itemView.textViewMessageLatestMessage.text = chatMessage.text
 
         val chatPartnerId: String
         if (chatMessage.fromId == FirebaseAuth.getInstance().uid) {
@@ -34,19 +29,11 @@ class LatestChatItems (val chatMessage: ChatMessage): Item<ViewHolder>() {
         val ref = FirebaseDatabase.getInstance().getReference("/users/$chatPartnerId")
         ref.addListenerForSingleValueEvent(object: ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
-                val chatPartnerUser = p0.getValue(User::class.java)
-                viewHolder.itemView.latestMessageTextView.text = chatPartnerUser?.username
+                chatPartnerUser = p0.getValue(User::class.java)
+                viewHolder.itemView.textViewUsernameLatestChats.text = chatPartnerUser?.username
 
-                val uri = chatPartnerUser?.profileImageUrl
-                val targetImageView = viewHolder.itemView.latestMessageCircleImageView
-                //Picasso.get().load(chatPartnerUser?.profileImageUrl).into(targetImageView)
-                if(uri == "null") {
-                    Picasso.get().load(R.drawable.profile_black).into(targetImageView)
-                } else {
-                    Picasso.get().load(uri).into(targetImageView)
-                }
-
-
+                val targetImageView = viewHolder.itemView.circleImageViewLatestChats
+                Picasso.get().load(chatPartnerUser?.profileImageUrl).into(targetImageView)
             }
 
             override fun onCancelled(p0: DatabaseError) {

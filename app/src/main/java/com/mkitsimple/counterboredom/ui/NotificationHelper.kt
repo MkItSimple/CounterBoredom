@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.mkitsimple.counterboredom.R
+import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.auth.RegisterActivity.Companion.CHANNEL_ID
 import com.mkitsimple.counterboredom.ui.main.LatestChatsFragment
 
@@ -15,7 +16,8 @@ class NotificationHelper {
     fun displayNotification(
         context: Context,
         title: String,
-        body: String
+        body: String,
+        currentUser: User?
     ) {
         val intent = Intent(context, LatestChatsFragment::class.java)
         val pendingIntent = PendingIntent.getActivity(

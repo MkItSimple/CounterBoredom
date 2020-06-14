@@ -1,8 +1,8 @@
 package com.mkitsimple.counterboredom.ui
 
-import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.mkitsimple.counterboredom.ui.main.MainActivity
 
 // This will recieve the incoming messages of notifications
 class MyFirebaseMessagingService : FirebaseMessagingService() {
@@ -20,7 +20,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
             //Log.d(TAG, " choreyn : $title $body")
             // helper will build and display the notification recieved by this MyFirebaseMessagingService
-            helper?.displayNotification(applicationContext, title, body)
+            helper?.displayNotification(applicationContext, title, body, MainActivity.currentUser)
         }
 
     }
