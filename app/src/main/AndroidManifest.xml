@@ -13,7 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".ui.main.UserActivity"></activity>
+        <activity android:name=".ui.main.ProfileActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.main.MainActivity" />
+        </activity>
+        <activity android:name=".ui.main.UserActivity" />
         <activity android:name=".ui.main.ChatLogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

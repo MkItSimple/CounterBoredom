@@ -13,7 +13,7 @@ import com.mkitsimple.counterboredom.data.models.ChatMessage
 import com.mkitsimple.counterboredom.ui.views.LatestChatItems
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.latest_chats_fragment.*
+import kotlinx.android.synthetic.main.fragment_latest_chats.*
 
 class LatestChatsFragment : Fragment() {
 
@@ -30,7 +30,7 @@ class LatestChatsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.latest_chats_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_latest_chats, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

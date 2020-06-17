@@ -27,7 +27,7 @@ android:id="@+id/toolbarCustom"-->
             android:layout_height="40dp"
             android:layout_marginRight="10dp"
             android:background="@color/transparentBackground"
-            android:src="@drawable/pi" />
+            android:src="@drawable/profile_default" />
 
         <TextView
             android:id="@+id/customToolbarChatLogTextView"

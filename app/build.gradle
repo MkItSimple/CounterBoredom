@@ -82,4 +82,7 @@ dependencies {
 
     //New Material Design
     implementation 'com.google.android.material:material:1.2.0-alpha04'
+
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version"
 }

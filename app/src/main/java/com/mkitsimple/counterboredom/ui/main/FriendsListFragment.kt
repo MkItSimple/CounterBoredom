@@ -3,7 +3,6 @@ package com.mkitsimple.counterboredom.ui.main
 import android.content.Intent
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +11,10 @@ import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
 
 import com.mkitsimple.counterboredom.R
-import com.mkitsimple.counterboredom.ui.views.FriendsListItems
 import com.mkitsimple.counterboredom.ui.views.UserItem
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
-import kotlinx.android.synthetic.main.friends_list_fragment.*
+import kotlinx.android.synthetic.main.fragment_friends_list.*
 
 class FriendsListFragment : Fragment() {
 
@@ -33,7 +31,7 @@ class FriendsListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.friends_list_fragment, container, false)
+        return inflater.inflate(R.layout.fragment_friends_list, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

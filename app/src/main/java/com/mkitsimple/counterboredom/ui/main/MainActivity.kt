@@ -17,7 +17,6 @@ import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.auth.RegisterActivity
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.custom_toolbar_latestchats.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,9 +42,9 @@ class MainActivity : AppCompatActivity() {
         tab_layout.setupWithViewPager(view_pager)
 
         val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 1)
-        viewPagerAdapter.addFragment(latestChatsFragment, "Latest Chats")
-        viewPagerAdapter.addFragment(friendsFragment, "Friends List")
-        viewPagerAdapter.addFragment(profileFragment, "Profile")
+        viewPagerAdapter.addFragment(latestChatsFragment, "LATEST CHATS")
+        viewPagerAdapter.addFragment(friendsFragment, "FRIENDS LIST")
+        //viewPagerAdapter.addFragment(profileFragment, "PROFILE")
         view_pager.setAdapter(viewPagerAdapter)
         //view_pager.setCurrentItem(currentFragment!!, true)
 
@@ -66,6 +65,12 @@ class MainActivity : AppCompatActivity() {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         }
+
+        if (id == R.id.menu_account) {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
+
         return true
     }
 

@@ -7,11 +7,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -21,11 +18,10 @@ import com.mkitsimple.counterboredom.data.models.Profile
 import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.auth.RegisterActivity
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_profile.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import java.util.*
 
-
-class ProfileFragment : Fragment() {
+class ProfileActivity : AppCompatActivity() {
 
     companion object {
         fun newInstance() = ProfileFragment()
@@ -35,15 +31,10 @@ class ProfileFragment : Fragment() {
     private lateinit var viewModel: ProfileViewModel
     private var pictureChanged = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_profile, container, false)
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_profile)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
 
         //buttonSaveChanges.isEnabled = false
@@ -57,17 +48,11 @@ class ProfileFragment : Fragment() {
         }
 
         buttonSaveChanges.setOnClickListener {
-            //if (pictureChanged) {
-            //    Toast.makeText(context, "Changes saved!", Toast.LENGTH_SHORT).show()
             uploadImageToFirebaseStorage()
-            onResume()
-            //val intent = getIntent()
-            //startActivity(intent)
-            //} else {
-            //    Toast.makeText(context, "No changes have made.", Toast.LENGTH_SHORT).show()
-            //}
-            //Picasso.get().load(R.drawable.profile_white).into(circleImageViewMain)
+        }
 
+        profileBackArrow.setOnClickListener {
+            finish()
         }
     }
 
@@ -83,7 +68,7 @@ class ProfileFragment : Fragment() {
 
             selectedPhotoUri = data.data
             bitmap = MediaStore.Images.Media
-                .getBitmap(activity?.contentResolver, selectedPhotoUri)
+                .getBitmap(this.contentResolver, selectedPhotoUri)
 
             circleImageViewProfile.setImageBitmap(bitmap)
             //buttonSelectPhotoProfile.alpha = 0f
@@ -122,14 +107,12 @@ class ProfileFragment : Fragment() {
         ref.setValue(user)
             .addOnSuccessListener {
                 //Log.d(RegisterActivity.TAG, "Profile successfully updated!")
-                Toast.makeText(context, "Profile successfully updated!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
                 //circleImageViewMain.setImageBitmap(bitmap)
             }
             .addOnFailureListener {
                 //Log.d(RegisterActivity.TAG, "Failed to update value to database: ${it.message}")
-                Toast.makeText(context, "Profile successfully updated!", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
             }
     }
-
-
 }
