@@ -112,8 +112,16 @@ class MainActivity : AppCompatActivity() {
         viewModel.currentUser.observe(this, Observer { cUser ->
             currentUser = cUser
             //Log.d(TAG, "CurrentUser Name: "+ currentUser?.username)
+            if (currentUser?.profileImageUrl != "null") {
+                Picasso.get().load(currentUser?.profileImageUrl).into(circleImageViewMain)
+            }
 
-            Picasso.get().load(currentUser?.profileImageUrl).into(circleImageViewMain)
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchCurrentUser()
+        //toast("Resumed")
     }
 }

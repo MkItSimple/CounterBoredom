@@ -39,7 +39,7 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             app:tabIndicatorColor="@color/colorTextWhite"
             app:tabTextAppearance="@style/tabText"
             app:tabTextColor="@color/colorTextWhite"

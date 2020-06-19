@@ -10,11 +10,8 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.mkitsimple.counterboredom.R
-import com.mkitsimple.counterboredom.data.models.Profile
 import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.auth.RegisterActivity
 import com.squareup.picasso.Picasso
@@ -38,7 +35,10 @@ class ProfileActivity : AppCompatActivity() {
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
 
         //buttonSaveChanges.isEnabled = false
-        Picasso.get().load(MainActivity.currentUser?.profileImageUrl).into(circleImageViewProfile)
+        if(MainActivity.currentUser?.profileImageUrl != "null") {
+            Picasso.get().load(MainActivity.currentUser?.profileImageUrl)
+                .into(circleImageViewProfile)
+        }
         editTextProfile.setText(MainActivity.currentUser!!.username)
 
         circleImageViewProfile.setOnClickListener {
@@ -90,7 +90,7 @@ class ProfileActivity : AppCompatActivity() {
                 ref.downloadUrl.addOnSuccessListener {
                     Log.d(RegisterActivity.TAG, "File Location: $it")
                     //Picasso.get().load(it).into(circleImageViewMain)
-                    updateUser(it.toString())
+                    updateProfile(it.toString())
                 }
             }
             .addOnFailureListener {
@@ -98,21 +98,30 @@ class ProfileActivity : AppCompatActivity() {
             }
     }
 
-    private fun updateUser(profileImageUrl: String) {
-        val uid = FirebaseAuth.getInstance().uid ?: ""
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+    private fun updateProfile(profileImageUrl: String) {
 
-        val user = Profile(uid, editTextProfile.text.toString(), profileImageUrl)
+        viewModel.updateProfile(profileImageUrl, editTextProfile.text.toString())
+        viewModel.isSuccessful.observe(this, androidx.lifecycle.Observer { isSuccessful ->
+            if(isSuccessful){
+                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
+                circleImageViewProfile.setImageBitmap(bitmap)
+            }
+        })
 
-        ref.setValue(user)
-            .addOnSuccessListener {
-                //Log.d(RegisterActivity.TAG, "Profile successfully updated!")
-                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
-                //circleImageViewMain.setImageBitmap(bitmap)
-            }
-            .addOnFailureListener {
-                //Log.d(RegisterActivity.TAG, "Failed to update value to database: ${it.message}")
-                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
-            }
+//        val uid = FirebaseAuth.getInstance().uid ?: ""
+//        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+//
+//        val user = Profile(uid, editTextProfile.text.toString(), profileImageUrl)
+//
+//        ref.setValue(user)
+//            .addOnSuccessListener {
+//                //Log.d(RegisterActivity.TAG, "Profile successfully updated!")
+//                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
+//                //circleImageViewMain.setImageBitmap(bitmap)
+//            }
+//            .addOnFailureListener {
+//                //Log.d(RegisterActivity.TAG, "Failed to update value to database: ${it.message}")
+//                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
+//            }
     }
 }

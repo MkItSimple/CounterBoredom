@@ -3,10 +3,10 @@ package com.mkitsimple.counterboredom.ui.auth
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.iid.FirebaseInstanceId
@@ -76,7 +76,8 @@ class RegisterActivity : AppCompatActivity() {
                 if (!it.isSuccessful) return@addOnCompleteListener
                 Log.d(TAG, "Successfully created user with uid: ${it.result?.user?.uid}")
                 uploadImageToFirebaseStorage()
-                saveUserToFirebaseDatabase(selectedPhotoUri.toString(), token)
+                //saveUserToFirebaseDatabase(selectedPhotoUri.toString(), token)
+                saveUserToFirebaseDatabase(token)
             }
             .addOnFailureListener{
                 Log.d(TAG, "Failed to create user: ${it.message}")
@@ -85,6 +86,7 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     var selectedPhotoUri: Uri? = null
+    var downloadedPhotoUri: String? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -112,7 +114,10 @@ class RegisterActivity : AppCompatActivity() {
 
                 ref.downloadUrl.addOnSuccessListener {
                     Log.d(TAG, "File Location: $it")
-                    saveUserToFirebaseDatabase(it.toString(), token)
+                    downloadedPhotoUri = it.toString()
+                    //saveUserToFirebaseDatabase(it.toString(), token)
+                    //saveUserToFirebaseDatabase(token)
+
                 }
             }
             .addOnFailureListener {
@@ -120,11 +125,11 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-    private fun saveUserToFirebaseDatabase(profileImageUrl: String, token: String?) {
+    private fun saveUserToFirebaseDatabase(token: String?) {
         val uid = FirebaseAuth.getInstance().uid ?: ""
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
-        val user = User(uid, editTextUsername.text.toString(), profileImageUrl, token!!)
+        val user = User(uid, editTextUsername.text.toString(), downloadedPhotoUri.toString(), token!!)
 
         ref.setValue(user)
             .addOnSuccessListener {
