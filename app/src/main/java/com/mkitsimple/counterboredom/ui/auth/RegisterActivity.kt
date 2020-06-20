@@ -77,7 +77,7 @@ class RegisterActivity : AppCompatActivity() {
                 Log.d(TAG, "Successfully created user with uid: ${it.result?.user?.uid}")
                 uploadImageToFirebaseStorage()
                 //saveUserToFirebaseDatabase(selectedPhotoUri.toString(), token)
-                saveUserToFirebaseDatabase(token)
+                saveUserToFirebaseDatabase(selectedPhotoUri.toString(), token)
             }
             .addOnFailureListener{
                 Log.d(TAG, "Failed to create user: ${it.message}")
@@ -114,9 +114,10 @@ class RegisterActivity : AppCompatActivity() {
 
                 ref.downloadUrl.addOnSuccessListener {
                     Log.d(TAG, "File Location: $it")
-                    downloadedPhotoUri = it.toString()
+                    //downloadedPhotoUri = it.toString()
                     //saveUserToFirebaseDatabase(it.toString(), token)
                     //saveUserToFirebaseDatabase(token)
+                    selectedPhotoUri = it
 
                 }
             }
@@ -125,11 +126,11 @@ class RegisterActivity : AppCompatActivity() {
             }
     }
 
-    private fun saveUserToFirebaseDatabase(token: String?) {
+    private fun saveUserToFirebaseDatabase(profileImageUrl: String, token: String?) {
         val uid = FirebaseAuth.getInstance().uid ?: ""
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
-        val user = User(uid, editTextUsername.text.toString(), downloadedPhotoUri.toString(), token!!)
+        val user = User(uid, editTextUsername.text.toString(), profileImageUrl, token!!)
 
         ref.setValue(user)
             .addOnSuccessListener {
