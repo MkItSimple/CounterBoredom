@@ -14,53 +14,58 @@ class AuthViewModel : ViewModel() {
 
     private var mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    private val _isRegisterSuccessful = MutableLiveData<Boolean>()
-    val isSuccessful: LiveData<Boolean>
-        get() = _isRegisterSuccessful
-
-    private val _isUploadImageSuccessful = MutableLiveData<Boolean>()
-    val isUploadImageSuccessful: LiveData<Boolean>
-        get() = _isUploadImageSuccessful
-
-    private val _isPerformRegisterSuccessful = MutableLiveData<Boolean>()
-    val isPerformRegisterSuccessful: LiveData<Boolean>
-        get() = _isPerformRegisterSuccessful
-
+    // Login
     private val _isPerformLoginSuccessful = MutableLiveData<Boolean>()
     val isPerformLoginSuccessful: LiveData<Boolean>
         get() = _isPerformLoginSuccessful
-
 
     private val _loginErrorMessage = MutableLiveData<String>()
     val loginErrorMessage: LiveData<String>
         get() = _loginErrorMessage
 
+    // Register
+    private val _isSaveUserToFirebaseDatabaseSuccessful = MutableLiveData<Boolean>()
+    val isSaveUserToFirebaseDatabaseSuccessful: LiveData<Boolean>
+        get() = _isSaveUserToFirebaseDatabaseSuccessful
+
+    private val _isPerformRegisterSuccessful = MutableLiveData<Boolean>()
+    val isPerformRegisterSuccessful: LiveData<Boolean>
+        get() = _isPerformRegisterSuccessful
+
+    private val _registerErrorMessage = MutableLiveData<String>()
+    val registerErrorMessage: LiveData<String>
+        get() = _registerErrorMessage
+
+    private val _isUploadImageSuccessful = MutableLiveData<Boolean>()
+    val isUploadImageSuccessful: LiveData<Boolean>
+        get() = _isUploadImageSuccessful
+
+
+
+
+
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String>
         get() = _errorMessage
 
-    private val _downloadedPhotoUri = MutableLiveData<Uri>()
-    val downloadedPhotoUri: LiveData<Uri>
-        get() = _downloadedPhotoUri
+    private val _mSelectedPhotoUri = MutableLiveData<String>()
+    val mSelectedPhotoUri: LiveData<String>
+        get() = _mSelectedPhotoUri
 
 
     fun uploadImageToFirebaseStorage(selectedPhotoUri: Uri) {
+
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
 
         ref.putFile(selectedPhotoUri)
             .addOnSuccessListener {
-                //Log.d(RegisterActivity.TAG, "Successfully uploaded image: ${it.metadata?.path}")
-                _isUploadImageSuccessful.value = true
-
                 ref.downloadUrl.addOnSuccessListener {
-                    //Log.d(RegisterActivity.TAG, "File Location: $it")
-                    //downloadedPhotoUri = it.toString()
-                    _downloadedPhotoUri.value = it
+                    _mSelectedPhotoUri.value = it.toString()
+                    _isUploadImageSuccessful.value = true
                 }
             }
             .addOnFailureListener {
-                //Log.d(RegisterActivity.TAG, "Failed to upload image to storage: ${it.message}")
                 _isUploadImageSuccessful.value = false
             }
     }
@@ -74,6 +79,7 @@ class AuthViewModel : ViewModel() {
             }
             .addOnFailureListener{
                 _isPerformRegisterSuccessful.value = false
+                _registerErrorMessage.value = it.message
             }
     }
 
@@ -86,14 +92,14 @@ class AuthViewModel : ViewModel() {
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
         val user = User(uid, username, downloadedPhotoUri, token)
-//        ref.setValue(user)
-//            .addOnSuccessListener {
-//                _isRegisterSuccessful.value = true
-//            }
-//            .addOnFailureListener {
-//                _isRegisterSuccessful.value = false
-//                _errorMessage.value = it.message
-//            }
+        ref.setValue(user)
+            .addOnSuccessListener {
+                _isSaveUserToFirebaseDatabaseSuccessful.value = true
+            }
+            .addOnFailureListener {
+                _isSaveUserToFirebaseDatabaseSuccessful.value = false
+                _errorMessage.value = it.message
+            }
     }
 
     fun performLogin(email: String, password: String) {

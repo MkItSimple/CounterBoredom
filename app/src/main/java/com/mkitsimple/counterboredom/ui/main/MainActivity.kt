@@ -120,7 +120,6 @@ class MainActivity : AppCompatActivity() {
             if (currentUser?.profileImageUrl != "null") {
                 Picasso.get().load(currentUser?.profileImageUrl).into(circleImageViewMain)
             }
-
         })
     }
 

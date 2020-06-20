@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.data.models.ChatMessage
+import com.mkitsimple.counterboredom.data.models.MessageType
 import com.mkitsimple.counterboredom.data.models.User
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.Item
@@ -17,8 +18,7 @@ class LatestChatItems (val chatMessage: ChatMessage): Item<ViewHolder>() {
     var chatPartnerUser: User? = null
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
-        viewHolder.itemView.textViewMessageLatestMessage.text = chatMessage.text
-
+        var who : String? = "You"
         val chatPartnerId: String
         if (chatMessage.fromId == FirebaseAuth.getInstance().uid) {
             chatPartnerId = chatMessage.toId
@@ -34,6 +34,15 @@ class LatestChatItems (val chatMessage: ChatMessage): Item<ViewHolder>() {
 
                 val targetImageView = viewHolder.itemView.circleImageViewLatestChats
                 Picasso.get().load(chatPartnerUser?.profileImageUrl).into(targetImageView)
+
+                if (chatMessage.type == MessageType.TEXT) {
+                    viewHolder.itemView.textViewMessageLatestMessage.text = chatMessage.text
+                } else {
+                    if (chatMessage.fromId != FirebaseAuth.getInstance().uid) {
+                        who = chatPartnerUser?.username
+                    }
+                    viewHolder.itemView.textViewMessageLatestMessage.text = "$who sent a photo."
+                }
             }
 
             override fun onCancelled(p0: DatabaseError) {

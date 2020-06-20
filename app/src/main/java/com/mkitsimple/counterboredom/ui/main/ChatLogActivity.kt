@@ -10,19 +10,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.views.ChatFromItem
 import com.mkitsimple.counterboredom.ui.views.ChatToItem
 import com.mkitsimple.counterboredom.ui.views.ImageFromItem
 import com.mkitsimple.counterboredom.ui.views.ImageToItem
+import com.mkitsimple.counterboredom.util.longToast
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
 import kotlinx.android.synthetic.main.custom_toolbar_chatlog.*
-import java.util.*
 
 class ChatLogActivity : AppCompatActivity() {
 
@@ -41,13 +40,13 @@ class ChatLogActivity : AppCompatActivity() {
     var token: String? = null
 
 
-    private lateinit var chatLogViewModel: ChatLogViewModel
+    private lateinit var viewModel: ChatLogViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_log)
 
-        chatLogViewModel = ViewModelProviders.of(this)[ChatLogViewModel::class.java]
+        viewModel = ViewModelProviders.of(this)[ChatLogViewModel::class.java]
 
         recylerViewChatLog.adapter = adapter
 
@@ -62,14 +61,12 @@ class ChatLogActivity : AppCompatActivity() {
         //val uid = mAuth.uid
 
         backArrow.setOnClickListener {
-            //val intent = Intent(this, MainActivity::class.java)
-            //startActivity(intent)
             finish()
         }
 
         //setDummyData()
-        listenForMessages()
         //getCurrentUser(uid!!)
+        listenForMessages()
 
         chatLogSendbuutton.setOnClickListener {
             //Log.d(TAG, "Attempt to send message....")
@@ -110,28 +107,64 @@ class ChatLogActivity : AppCompatActivity() {
     private fun uploadImageToFirebaseStorage() {
         if (selectedPhotoUri == null) return
 
-        val filename = UUID.randomUUID().toString()
-        val ref = FirebaseStorage.getInstance().getReference("/messages/$filename")
-
-        ref.putFile(selectedPhotoUri!!)
-            .addOnSuccessListener {
-                Log.d(TAG, "Successfully uploaded image: ${it.metadata?.path}")
-
-                ref.downloadUrl.addOnSuccessListener {
-                    Log.d(TAG, "File Location: $it")
-                    //saveUserToFirebaseDatabase(it.toString(), token)
+        viewModel.uploadImageToFirebaseStorage(selectedPhotoUri!!)
+        viewModel.isUploadImageSuccessful.observe(this, Observer {
+            if (it) {
+                viewModel.uploadedImageUri.observe(this, Observer {
                     performSendImageMessage(it.toString())
-                }
+                })
+            } else {
+                viewModel.uploadImageErrorMessage.observe(this, Observer { uploadImageErrorMessage ->
+                    longToast("Failed to upload image to storage: $uploadImageErrorMessage")
+                })
             }
-            .addOnFailureListener {
-                Log.d(TAG, "Failed to upload image to storage: ${it.message}")
+        })
+
+//        val filename = UUID.randomUUID().toString()
+//        val ref = FirebaseStorage.getInstance().getReference("/messages/$filename")
+//
+//        ref.putFile(selectedPhotoUri)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Successfully uploaded image: ${it.metadata?.path}")
+//
+//                ref.downloadUrl.addOnSuccessListener {
+//                    Log.d(TAG, "File Location: $it")
+//                    //saveUserToFirebaseDatabase(it.toString(), token)
+//                    performSendImageMessage(it.toString())
+//                }
+//            }
+//            .addOnFailureListener {
+//                Log.d(TAG, "Failed to upload image to storage: ${it.message}")
+//            }
+    }
+
+    private fun listenForMessages() {
+        viewModel.listenForMessages(toUser?.uid)
+        viewModel.chatMessage.observe(this, Observer { chatMessage ->
+
+            if (chatMessage.fromId == mAuth.uid) {
+                //adapter.add(ChatToItem(chatMessage.text, currentUser))
+                adapter.add(ChatFromItem(chatMessage.text, MainActivity.currentUser!!))
+            } else {
+                adapter.add(ChatToItem(chatMessage.text, toUser!!))
             }
+
+            recylerViewChatLog.scrollToPosition(adapter.itemCount - 1)
+        })
+
+        viewModel.imageMessage.observe(this, Observer {imageMessage ->
+            if (imageMessage.fromId == mAuth.uid) {
+                adapter.add(ImageToItem(imageMessage!!.imagePath, MainActivity.currentUser!!))
+            } else {
+                adapter.add(ImageFromItem(imageMessage!!.imagePath, toUser!!))
+            }
+        })
     }
 
     private fun performSendImageMessage(fileLocation: String) {
-        chatLogViewModel.performSendImageMessage(toId, fromId, fileLocation)
+        viewModel.performSendImageMessage(toId, fromId, fileLocation)
 
-        chatLogViewModel.isSuccessful.observe(this, Observer { isSuccessful ->
+        viewModel.isSuccessful.observe(this, Observer { isSuccessful ->
             if(isSuccessful){
                 chatLogEditText.text.clear()
                 recylerViewChatLog.scrollToPosition(adapter.itemCount - 1)
@@ -143,9 +176,9 @@ class ChatLogActivity : AppCompatActivity() {
         val text = chatLogEditText.text.toString()
         //val fromUsername = currentUser!!.username
 
-        chatLogViewModel.performSendMessage(toId, fromId, text)
+        viewModel.performSendMessage(toId, fromId, text)
 
-        chatLogViewModel.isSuccessful.observe(this, Observer { isSuccessful ->
+        viewModel.isSuccessful.observe(this, Observer { isSuccessful ->
             if(isSuccessful){
                 chatLogEditText.text.clear()
                 recylerViewChatLog.scrollToPosition(adapter.itemCount - 1)
@@ -183,28 +216,5 @@ class ChatLogActivity : AppCompatActivity() {
 //            }
 //        })
         // end  notification
-    }
-
-    private fun listenForMessages() {
-        chatLogViewModel.listenForMessages(toUser?.uid)
-        chatLogViewModel.chatMessage.observe(this, Observer { chatMessage ->
-
-            if (chatMessage.fromId == mAuth.uid) {
-                //adapter.add(ChatToItem(chatMessage.text, currentUser))
-                adapter.add(ChatFromItem(chatMessage.text, MainActivity.currentUser!!))
-            } else {
-                adapter.add(ChatToItem(chatMessage.text, toUser!!))
-            }
-
-            recylerViewChatLog.scrollToPosition(adapter.itemCount - 1)
-        })
-
-        chatLogViewModel.imageMessage.observe(this, Observer {imageMessage ->
-            if (imageMessage.fromId == mAuth.uid) {
-                adapter.add(ImageToItem(imageMessage!!.imagePath, MainActivity.currentUser!!))
-            } else {
-                adapter.add(ImageFromItem(imageMessage!!.imagePath, toUser!!))
-            }
-        })
     }
 }

@@ -34,7 +34,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_margin="10dp"
-            android:background="@drawable/ic_photo"
+            android:background="@drawable/ic_insert_photo_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

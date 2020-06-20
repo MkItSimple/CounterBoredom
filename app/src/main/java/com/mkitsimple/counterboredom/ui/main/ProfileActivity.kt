@@ -7,16 +7,16 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.google.firebase.storage.FirebaseStorage
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.auth.RegisterActivity
+import com.mkitsimple.counterboredom.util.longToast
+import com.mkitsimple.counterboredom.util.toast
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_profile.*
-import java.util.*
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -26,7 +26,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private lateinit var viewModel: ProfileViewModel
-    private var pictureChanged = false
+    private var profileChanged = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +57,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     var selectedPhotoUri: Uri? = null
+    var mUploadedImageUri: String? = null
     var bitmap : Bitmap? = null
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -73,29 +74,67 @@ class ProfileActivity : AppCompatActivity() {
             circleImageViewProfile.setImageBitmap(bitmap)
             //buttonSelectPhotoProfile.alpha = 0f
 
-            pictureChanged  = true
+            //pictureChanged  = true
         }
     }
 
     private fun uploadImageToFirebaseStorage() {
+
+//        if (selectedPhotoUri == null) {
+//            //saveUserToFirebaseDatabase(token)
+//        } else {
+//            viewModel.uploadImageToFirebaseStorage(selectedPhotoUri!!)
+//            viewModel.isUploadImageSuccessful.observe(this, Observer { isUploadImageSuccessful ->
+//                if (isUploadImageSuccessful) {
+//                    viewModel.uploadedImageUri.observe(this, Observer { uploadedImageUri ->
+//                        mUploadedImageUri = uploadedImageUri
+//                    })
+//                } else {
+//                    viewModel.uploadImageErrorMessage.observe(this, Observer {
+//                        toast("Failed to upload image to storage: $it")
+//                    })
+//                }
+//            })
+//        }
+
+
+//        val editTextUsername = editTextProfile.text.toString()
+//
+//        if (editTextUsername.isEmpty()) {
+//            toast("Please fill out username")
+//            return
+//        }
+//
         if (selectedPhotoUri == null) return
-
-        val filename = UUID.randomUUID().toString()
-        val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
-
-        ref.putFile(selectedPhotoUri!!)
-            .addOnSuccessListener {
-                Log.d(RegisterActivity.TAG, "Successfully uploaded image: ${it.metadata?.path}")
-
-                ref.downloadUrl.addOnSuccessListener {
-                    Log.d(RegisterActivity.TAG, "File Location: $it")
-                    //Picasso.get().load(it).into(circleImageViewMain)
-                    updateProfile(it.toString())
-                }
+        viewModel.uploadImageToFirebaseStorage(selectedPhotoUri!!)
+        viewModel.isUploadImageSuccessful.observe(this, Observer { isUploadImageSuccessful ->
+            if (isUploadImageSuccessful) {
+                viewModel.uploadedImageUri.observe(this, Observer { uploadedImageUri ->
+                    mUploadedImageUri = uploadedImageUri
+                })
+            } else {
+                viewModel.uploadImageErrorMessage.observe(this, Observer {
+                    longToast("Failed to upload image to storage: $it")
+                })
             }
-            .addOnFailureListener {
-                Log.d(RegisterActivity.TAG, "Failed to upload image to storage: ${it.message}")
-            }
+        })
+
+//        val filename = UUID.randomUUID().toString()
+//        val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
+//
+//        ref.putFile(selectedPhotoUri!!)
+//            .addOnSuccessListener {
+//                Log.d(RegisterActivity.TAG, "Successfully uploaded image: ${it.metadata?.path}")
+//
+//                ref.downloadUrl.addOnSuccessListener {
+//                    Log.d(RegisterActivity.TAG, "File Location: $it")
+//                    //Picasso.get().load(it).into(circleImageViewMain)
+//                    updateProfile(it.toString())
+//                }
+//            }
+//            .addOnFailureListener {
+//                Log.d(RegisterActivity.TAG, "Failed to upload image to storage: ${it.message}")
+//            }
     }
 
     private fun updateProfile(profileImageUrl: String) {
@@ -103,7 +142,7 @@ class ProfileActivity : AppCompatActivity() {
         viewModel.updateProfile(profileImageUrl, editTextProfile.text.toString())
         viewModel.isSuccessful.observe(this, androidx.lifecycle.Observer { isSuccessful ->
             if(isSuccessful){
-                Toast.makeText(this, "Profile successfully updated!", Toast.LENGTH_LONG).show()
+                toast("Profile successfully updated!")
                 circleImageViewProfile.setImageBitmap(bitmap)
             }
         })

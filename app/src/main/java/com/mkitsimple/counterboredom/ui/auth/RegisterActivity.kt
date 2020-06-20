@@ -12,8 +12,8 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
 import com.mkitsimple.counterboredom.R
+import com.mkitsimple.counterboredom.ui.main.MainActivity
 import com.mkitsimple.counterboredom.util.longToast
-import com.mkitsimple.counterboredom.util.toast
 import kotlinx.android.synthetic.main.activity_register.*
 
 class RegisterActivity : AppCompatActivity() {
@@ -46,10 +46,6 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
 
-        buttonRegister.setOnClickListener {
-            performRegister()
-        }
-
         textViewAlreadyHaveAccount.setOnClickListener {
             Log.d(TAG, "Try to show login activity")
 
@@ -65,49 +61,10 @@ class RegisterActivity : AppCompatActivity() {
             intent.type = "image/*"
             startActivityForResult(intent, 0)
         }
-    }
 
-    private fun performRegister(){
-        val email = editTextEmail.text.toString()
-        val password = editTextPassword.text.toString()
-
-//        if (email.isEmpty() || password.isEmpty()) {
-//            longToast("Please fill out username.")
-//            return
-//        }
-//        if (password.isEmpty()) {
-//            longToast("Please fill out email.")
-//            return
-//        }
-//
-//        if (password.isEmpty()) {
-//            longToast("Please fill out password.")
-//            return
-//        }
-
-        //viewModel.performRegister(email, password)
-        //viewModel.isPerformRegisterSuccessful.observe(this, Observer { isPerformRegisterSuccessful ->
-            //if (isPerformRegisterSuccessful) {
-                uploadImageToFirebaseStorage()
-        //longToast(downloadedPhotoUri!!)
-                //saveUserToFirebaseDatabase(downloadedPhotoUri, token)
-            //}
-        //})
-
-//        Log.d(TAG, "Email is: " + email)
-//
-//        mAuth.createUserWithEmailAndPassword(email, password)
-//            .addOnCompleteListener {
-//                if (!it.isSuccessful) return@addOnCompleteListener
-//                Log.d(TAG, "Successfully created user with uid: ${it.result?.user?.uid}")
-//                uploadImageToFirebaseStorage()
-//                //saveUserToFirebaseDatabase(selectedPhotoUri.toString(), token)
-//                saveUserToFirebaseDatabase(token)
-//            }
-//            .addOnFailureListener{
-//                Log.d(TAG, "Failed to create user: ${it.message}")
-//                toast("Failed to create user: ${it.message}")
-//            }
+        buttonRegister.setOnClickListener {
+            performRegister()
+        }
     }
 
     var selectedPhotoUri: Uri? = null
@@ -127,16 +84,59 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    private fun uploadImageToFirebaseStorage() {
-        if (selectedPhotoUri == null) return
-        viewModel.uploadImageToFirebaseStorage(selectedPhotoUri!!)
+    private fun performRegister(){
+        //uploadImageToFirebaseStorage()
+        val username = editTextUsername.text.toString()
+        val email = editTextEmail.text.toString()
+        val password = editTextPassword.text.toString()
 
-        viewModel.isUploadImageSuccessful.observe(this, Observer {isUploadImageSuccessful ->
-            if (isUploadImageSuccessful == true) {
-                downloadedPhotoUri = viewModel.downloadedPhotoUri.toString()
-                longToast(downloadedPhotoUri!!)
+        if (username.isEmpty()) {
+            longToast("Please fill out username")
+            return
+        }
+
+        if (email.isEmpty()) {
+            longToast("Please fill out email")
+            return
+        }
+
+        if (password.isEmpty()) {
+            longToast("Please fill out password")
+            return
+        }
+
+        viewModel.performRegister(email, password)
+        viewModel.isPerformRegisterSuccessful.observe(this, Observer {
+            if (it) {
+                uploadImageToFirebaseStorage()
+            } else {
+                viewModel.registerErrorMessage.observe(this, Observer { registerErrorMessage ->
+                    longToast("Failed to create user: $registerErrorMessage")
+                })
             }
         })
+
+//        mAuth.createUserWithEmailAndPassword(email, password)
+//            .addOnCompleteListener {
+//                if (!it.isSuccessful) return@addOnCompleteListener
+//                Log.d(TAG, "Successfully created user with uid: ${it.result?.user?.uid}")
+//                uploadImageToFirebaseStorage()
+//            }
+//            .addOnFailureListener{
+//                Log.d(TAG, "Failed to create user: ${it.message}")
+//                toast("Failed to create user: ${it.message}")
+//            }
+    }
+
+    private fun uploadImageToFirebaseStorage() {
+        if (selectedPhotoUri == null) {
+            saveUserToFirebaseDatabase(token)
+        } else {
+            viewModel.uploadImageToFirebaseStorage(selectedPhotoUri!!)
+            viewModel.mSelectedPhotoUri.observe(this, Observer {
+                saveUserToFirebaseDatabaseWithProfileImage(it.toString(), token)
+            })
+        }
 
 //        val filename = UUID.randomUUID().toString()
 //        val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
@@ -147,7 +147,11 @@ class RegisterActivity : AppCompatActivity() {
 //
 //                ref.downloadUrl.addOnSuccessListener {
 //                    Log.d(TAG, "File Location: $it")
-//                    downloadedPhotoUri = it.toString()
+//                    //downloadedPhotoUri = it.toString()
+//                    //saveUserToFirebaseDatabase(it.toString(), token)
+//                    //saveUserToFirebaseDatabase(token)
+//                    selectedPhotoUri = it
+//
 //                }
 //            }
 //            .addOnFailureListener {
@@ -155,34 +159,56 @@ class RegisterActivity : AppCompatActivity() {
 //            }
     }
 
-    private fun saveUserToFirebaseDatabase(profileImageUrl: String?, token: String?) {
-        toast(profileImageUrl!!)
-//        viewModel.saveUserToFirebaseDatabase(editTextUsername.text.toString(), profileImageUrl.toString(), token!!)
-//        viewModel.isSuccessful.observe(this, androidx.lifecycle.Observer {isSuccessful ->
-//            if (isSuccessful) {
-//                val intent = Intent(this, MainActivity::class.java)
-//                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                startActivity(intent)
-//            } else {
-//                longToast("Failed to set value to database: " + viewModel.errorMessage)
-//            }
-//        })
+    private fun saveUserToFirebaseDatabase(token: String?) {
+
+        viewModel.saveUserToFirebaseDatabase(editTextUsername.text.toString(), "null", token!!)
+        viewModel.isSaveUserToFirebaseDatabaseSuccessful.observe(this, Observer {
+            if (it)
+                loginUser()
+        })
 
 //        val uid = FirebaseAuth.getInstance().uid ?: ""
 //        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 //
-//        val user = User(uid, editTextUsername.text.toString(), downloadedPhotoUri.toString(), token!!)
+//        val user = User(uid, editTextUsername.text.toString(), "null", token!!)
 //
 //        ref.setValue(user)
 //            .addOnSuccessListener {
 //                Log.d(TAG, "Finally we saved the user to Firebase Database")
-//
-//                val intent = Intent(this, MainActivity::class.java)
-//                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                startActivity(intent)
+//                loginUser()
 //            }
 //            .addOnFailureListener {
 //                Log.d(TAG, "Failed to set value to database: ${it.message}")
 //            }
     }
+
+    private fun saveUserToFirebaseDatabaseWithProfileImage(profileImageUrl: String?, token: String?) {
+
+        viewModel.saveUserToFirebaseDatabase(editTextUsername.text.toString(), profileImageUrl!!, token!!)
+        viewModel.isSaveUserToFirebaseDatabaseSuccessful.observe(this, Observer {
+            if (it)
+                loginUser()
+        })
+
+//        val uid = FirebaseAuth.getInstance().uid ?: ""
+//        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+//
+//        val user = User(uid, editTextUsername.text.toString(), profileImageUrl!!, token!!)
+//
+//        ref.setValue(user)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Finally we saved the user to Firebase Database")
+//                loginUser()
+//            }
+//            .addOnFailureListener {
+//                Log.d(TAG, "Failed to set value to database: ${it.message}")
+//            }
+    }
+
+    private fun loginUser() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+    }
+
 }

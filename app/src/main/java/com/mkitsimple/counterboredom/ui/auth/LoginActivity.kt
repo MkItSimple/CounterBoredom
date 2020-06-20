@@ -7,10 +7,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.ui.main.MainActivity
+import com.mkitsimple.counterboredom.util.longToast
 import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.clearTask
 import org.jetbrains.anko.intentFor
-import org.jetbrains.anko.longToast
 import org.jetbrains.anko.newTask
 
 class LoginActivity : AppCompatActivity() {
@@ -46,7 +46,9 @@ class LoginActivity : AppCompatActivity() {
             if (isPerformLoginSuccessful) {
                 startActivity(intentFor<MainActivity>().clearTask().newTask())
             } else {
-                longToast("Failed to log in: " + viewModel.loginErrorMessage)
+                viewModel.loginErrorMessage.observe(this, Observer { loginErrorMessage ->
+                    longToast("Failed to log in: " + loginErrorMessage)
+                })
             }
         })
 
