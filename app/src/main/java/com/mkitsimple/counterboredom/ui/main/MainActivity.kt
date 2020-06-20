@@ -17,6 +17,7 @@ import com.mkitsimple.counterboredom.data.models.User
 import com.mkitsimple.counterboredom.ui.auth.RegisterActivity
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.intentFor
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,6 +48,10 @@ class MainActivity : AppCompatActivity() {
         //viewPagerAdapter.addFragment(profileFragment, "PROFILE")
         view_pager.setAdapter(viewPagerAdapter)
         //view_pager.setCurrentItem(currentFragment!!, true)
+
+        circleImageViewMain.setOnClickListener {
+            startActivity(intentFor<ProfileActivity>())
+        }
 
         verifyUserIsLoggedIn()
         fetchCurrentUser()
