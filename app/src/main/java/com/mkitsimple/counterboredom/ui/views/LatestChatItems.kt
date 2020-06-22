@@ -32,8 +32,11 @@ class LatestChatItems (val chatMessage: ChatMessage): Item<ViewHolder>() {
                 chatPartnerUser = p0.getValue(User::class.java)
                 viewHolder.itemView.textViewUsernameLatestChats.text = chatPartnerUser?.username
 
-                val targetImageView = viewHolder.itemView.circleImageViewLatestChats
-                Picasso.get().load(chatPartnerUser?.profileImageUrl).into(targetImageView)
+                if (chatPartnerUser?.profileImageUrl != "null") {
+                    val targetImageView = viewHolder.itemView.circleImageViewLatestChats
+                    Picasso.get().load(chatPartnerUser?.profileImageUrl).into(targetImageView)
+                }
+
 
                 if (chatMessage.type == MessageType.TEXT) {
                     viewHolder.itemView.textViewMessageLatestMessage.text = chatMessage.text

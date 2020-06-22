@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
         tab_layout.setupWithViewPager(view_pager)
 
-        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 1)
+        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 0)
         viewPagerAdapter.addFragment(latestChatsFragment, "LATEST CHATS")
         viewPagerAdapter.addFragment(friendsFragment, "FRIENDS LIST")
         //viewPagerAdapter.addFragment(profileFragment, "PROFILE")

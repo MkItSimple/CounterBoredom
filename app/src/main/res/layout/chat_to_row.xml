@@ -14,7 +14,7 @@
         android:background="@drawable/background_chat_to"
         android:text="This is my message that will wrap into multipole lines and keep on going"
         android:textColor="#000"
-        android:textSize="12sp"
+        android:textSize="14sp"
         android:fontFamily="@font/montserrat_regular"
         android:maxWidth="240dp"
         android:paddingTop="10dp"
@@ -33,7 +33,7 @@
         android:layout_marginLeft="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/pi"
+        android:src="@drawable/profile_default"
         android:background="@color/transparentBackground"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

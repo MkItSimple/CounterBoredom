@@ -33,7 +33,7 @@
                 android:layout_height="40dp"
                 android:layout_marginLeft="20dp"
                 android:background="@color/transparentBackground"
-                android:src="@drawable/profile_white"/>
+                android:src="@drawable/profile_default"/>
         </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.tabs.TabLayout

@@ -22,7 +22,7 @@
         android:layout_marginRight="3dp"
         android:text="This is my message that will wrap into multipole lines and keep on going"
         android:textColor="@color/colorTextWhite"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageViewFromRow" />
 
@@ -30,7 +30,7 @@
         android:id="@+id/imageViewFromRow"
         android:layout_width="25dp"
         android:layout_height="25dp"
-        android:src="@drawable/pi"
+        android:src="@drawable/profile_default"
         android:layout_marginRight="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

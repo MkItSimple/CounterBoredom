@@ -12,16 +12,26 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.firebase.auth.FirebaseAuth
 import com.mkitsimple.counterboredom.R
 import com.mkitsimple.counterboredom.data.models.User
+import com.mkitsimple.counterboredom.data.network.Api
 import com.mkitsimple.counterboredom.ui.views.ChatFromItem
 import com.mkitsimple.counterboredom.ui.views.ChatToItem
 import com.mkitsimple.counterboredom.ui.views.ImageFromItem
 import com.mkitsimple.counterboredom.ui.views.ImageToItem
+import com.mkitsimple.counterboredom.util.BASE_URL
 import com.mkitsimple.counterboredom.util.longToast
+import com.mkitsimple.counterboredom.util.toast
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.activity_chat_log.*
 import kotlinx.android.synthetic.main.custom_toolbar_chatlog.*
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
 class ChatLogActivity : AppCompatActivity() {
 
@@ -186,35 +196,38 @@ class ChatLogActivity : AppCompatActivity() {
         })
 
         // send notification
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl("https://kotlinmessenger-3bcd8.web.app/api/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//        val api =
-//            retrofit.create(
-//                Api::class.java
-//            )
-//
-//        val call = api.sendNotification(token, MainActivity.currentUser!!.username, text)
-//
-//        call?.enqueue(object : Callback<ResponseBody?> {
-//            override fun onResponse(
-//                call: Call<ResponseBody?>,
-//                response: Response<ResponseBody?>
-//            ) {
-//                try {
-//                    toast(response.body()!!.string())
-//                } catch (e: IOException) {
-//                    e.printStackTrace()
-//                }
-//            }
-//
-//            override fun onFailure(
-//                call: Call<ResponseBody?>,
-//                t: Throwable
-//            ) {
-//            }
-//        })
-        // end  notification
+        //viewModel.sendNotification(token, MainActivity.currentUser!!.username, text)
+
+//        // send notification
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val api =
+            retrofit.create(
+                Api::class.java
+            )
+
+        val call = api.sendNotification(token, MainActivity.currentUser!!.username, text)
+
+        call?.enqueue(object : Callback<ResponseBody?> {
+            override fun onResponse(
+                call: Call<ResponseBody?>,
+                response: Response<ResponseBody?>
+            ) {
+                try {
+                    toast(response.body()!!.string())
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
+
+            override fun onFailure(
+                call: Call<ResponseBody?>,
+                t: Throwable
+            ) {
+            }
+        })
+//        // end  notification
     }
 }

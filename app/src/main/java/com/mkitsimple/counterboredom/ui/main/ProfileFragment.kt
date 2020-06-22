@@ -47,7 +47,10 @@ class ProfileFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
 
         //buttonSaveChanges.isEnabled = false
-        Picasso.get().load(MainActivity.currentUser?.profileImageUrl).into(circleImageViewProfile)
+        if (MainActivity.currentUser?.profileImageUrl != "null") {
+            Picasso.get().load(MainActivity.currentUser?.profileImageUrl).into(circleImageViewProfile)
+        }
+
         editTextProfile.setText(MainActivity.currentUser!!.username)
 
         circleImageViewProfile.setOnClickListener {
